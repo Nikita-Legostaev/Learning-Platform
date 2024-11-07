@@ -14,6 +14,7 @@ from app.models.lesson.model import Lesson
 from app.models.submission.model import Submission
 from app.models.users.model import User
 
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
