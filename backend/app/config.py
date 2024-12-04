@@ -17,3 +17,6 @@ class Settings(BaseSettings):
     ALGORITHM: str
 
 
+settings = Settings()
+
+
