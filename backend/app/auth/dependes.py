@@ -18,7 +18,7 @@ async def get_current_user(token: str = Depends(get_token)):
     expair: str = payload.get('exp')
     if int(expair) < int(datetime.now(timezone.utc).timestamp()) and not expair:
         raise Exception("Token expired")
-    user = UserRepository.find_by_id(id=int(payload['sub']))
+    user = await UserRepository.find_by_id(id=int(payload['sub']))
     if not user:
         raise Exception("User not found")
     return user

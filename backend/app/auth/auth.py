@@ -28,8 +28,11 @@ def create_access_token(data: dict) -> str:
     )
     return encode_jwt
 
-async def authenticate_user(email: EmailStr, password: str) -> dict:
+async def authenticate_user(email: str, password: str) -> dict:
     user = await UserRepository.find_one_or_none(email=email)
-    if not(user and verify_password(password, user.password_hash)):
-        raise Exception("Invalid credentials")
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    if not verify_password(password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    await UserRepository.update_last_login(user.id)
     return user

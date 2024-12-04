@@ -2,6 +2,7 @@ from fastapi import HTTPException, Depends
 from sqlalchemy import delete, insert, select, update
 from app.database import DatabaseFactory, get_database_factory
 from app.config import Settings
+from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 
 class BaseRepositories:
     model = None
@@ -41,10 +42,15 @@ class BaseRepositories:
             
     @classmethod
     async def find_one_or_none(cls, db_factory: DatabaseFactory = get_database_factory(settings), **filter):
-        async with db_factory.session() as session:
-            query = select(cls.model).filter_by(**filter).limit(1)
-            result = await session.execute(query)
-            return result.scalar_one_or_none()
+        try:
+            async with db_factory.session() as session:
+                query = select(cls.model).filter_by(**filter).limit(1)
+                result = await session.execute(query)
+                return result.scalar_one_or_none()
+        except MultipleResultsFound:
+            raise HTTPException(status_code=400, detail="Multiple users found with the same email.")
+        except NoResultFound:
+            return None
         
     @classmethod
     async def find_by_id(cls, id, db_factory: DatabaseFactory = get_database_factory(settings)):
