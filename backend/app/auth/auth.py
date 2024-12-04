@@ -3,6 +3,7 @@ from fastapi import Depends, Request
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import EmailStr
+from fastapi.exceptions import HTTPException
 
 from app.config import Settings
 from app.models.users.repositories import UserRepository
